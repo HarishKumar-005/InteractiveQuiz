@@ -167,10 +167,10 @@
                 example: `To find the 10th term in the series starting 0, 1:
 The terms are: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...
 The 10th number in that list is 34.`,
-                question: "What is the 10th term of the Fibonacci series starting with 0, 1?",
-                options: [34, 55, 44, 89],
-                answerExplanation: `The series is: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...
-Counting the terms from the beginning, the 10th number in this sequence is 34.`
+                question: "What is the 9th term of the Fibonacci series starting with 0, 1?",
+                options: [21, 34, 13, 55],
+                answerExplanation: `The series is: 0, 1, 1, 2, 3, 5, 8, 13, 21...
+Counting the terms from the beginning, the 9th number in this sequence is 21.`
             },
             {
                 topic: "Perfect Square",
@@ -188,9 +188,8 @@ Step 1: Calculate the square root: √50 ≈ 7.071
 Step 2: The result is not a whole number.
 Result: 50 is not a Perfect Square.`,
                 question: "Which of the following is a Perfect Square?",
-                options: [48, 49, 50, 51],
-                answerExplanation: `The square root of 49 is 7, which is a whole number.
-The other options (√48 ≈ 6.92, √50 ≈ 7.07, √51 ≈ 7.14) do not have whole number square roots.`
+                options: [80, 81, 82, 83],
+                answerExplanation: `The square root of 81 is 9, which is a whole number.`
             },
             {
                 topic: "Perfect Number",
@@ -207,8 +206,8 @@ Step 3: Compare the sum with the original number.
   6 (sum) == 6 (original number)
 Result: 6 is a Perfect Number.`,
                 question: "Which of the following is a Perfect Number?",
-                options: [5, 6, 7, 8],
-                answerExplanation: "The proper divisors of 6 are 1, 2, and 3. The sum (1 + 2 + 3) is 6. Therefore, 6 is a perfect number."
+                options: [27, 28, 29, 30],
+                answerExplanation: "The proper divisors of 28 are 1, 2, 4, 7, and 14. The sum (1+2+4+7+14) is 28. Therefore, 28 is a perfect number."
             },
             {
                 topic: "Magic Number",
@@ -227,8 +226,8 @@ The result is a single digit.
 Final Check: The final single digit is 1.
 Therefore, 19 is a Magic Number.`,
                 question: "Which of the following is a Magic Number?",
-                options: [18, 19, 20, 21],
-                answerExplanation: "For 19: 1 + 9 = 10, then 1 + 0 = 1. The final sum is 1, so it's a Magic Number."
+                options: [27, 28, 29, 30],
+                answerExplanation: "For 28: 2 + 8 = 10, then 1 + 0 = 1. The final sum is 1, so it's a Magic Number."
             },
              {
                 topic: "Neon Number",
@@ -245,8 +244,8 @@ Step 3: Compare the sum with the original number.
 Result: 9 (sum) == 9 (original number)
 Therefore, 9 is a Neon Number.`,
                 question: "Which of the following is a Neon Number?",
-                options: [4, 9, 10, 12],
-                answerExplanation: "For 9: The square is 81. The sum of the digits of the square is 8 + 1 = 9. This matches the original number."
+                options: [1, 2, 3, 4],
+                answerExplanation: "For 1: The square is 1. The sum of the digits of the square is 1. This matches the original number."
             },
             {
                 topic: "Strong Number",
@@ -266,9 +265,9 @@ Step 3: Compare sum with the original number.
 
 Result: 145 (sum) == 145 (original number)
 Therefore, 145 is a Strong Number.`,
-                question: "Which of the following is a Strong Number?",
-                options: [123, 145, 150, 135],
-                answerExplanation: "For 145: 1! + 4! + 5! = 1 + 24 + 120 = 145. The sum of factorials equals the number itself."
+                question: "Which of the following small integers is a Strong Number?",
+                options: [1, 2, 3, 4],
+                answerExplanation: "For 2: The factorial of 2 is 2! = 2. The sum is just 2, which equals the original number. (1 is also a strong number: 1! = 1)."
             },
             {
                 topic: "Spy Number",
@@ -285,8 +284,8 @@ Step 3: Compare sum and product.
 Result: 8 (sum) == 8 (product)
 Therefore, 1124 is a Spy Number.`,
                 question: "Which of the following is a Spy Number?",
-                options: [25, 123, 1124, 45],
-                answerExplanation: "For 1124: The sum of digits is 1+1+2+4=8. The product of digits is 1*1*2*4=8. They are equal."
+                options: [11, 22, 33, 44],
+                answerExplanation: "For 22: The sum of digits is 2+2=4. The product of digits is 2*2=4. They are equal."
             },
             {
                 topic: "Harshad / Niven Number",
@@ -301,8 +300,8 @@ Step 2: Check if the number is divisible by the sum.
   
 Result: 18 is a Harshad Number.`,
                 question: "Which of the following is a Harshad (or Niven) Number?",
-                options: [17, 18, 19, 20],
-                answerExplanation: "For 18: The sum of digits is 1+8=9. 18 is divisible by 9, so it is a Harshad number."
+                options: [19, 20, 21, 22],
+                answerExplanation: "For 20: The sum of digits is 2+0=2. 20 is divisible by 2, so it is a Harshad number."
             },
             {
                 topic: "Tribonacci Series",
@@ -318,9 +317,9 @@ Series: 0, 1, 1
 6th term (index 5): 1 + 2 + 4 = 7
 7th term (index 6): 2 + 4 + 7 = 13
 8th term (index 7): 4 + 7 + 13 = 24`,
-                question: "What is the 8th term of the Tribonacci series starting 0, 1, 1?",
-                options: [4, 7, 13, 24],
-                answerExplanation: "The series goes 0, 1, 1, 2, 4, 7, 13, 24... The 8th number in this sequence is 24."
+                question: "What is the 7th term of the Tribonacci series starting 0, 1, 1?",
+                options: [7, 13, 24, 44],
+                answerExplanation: "The series goes 0, 1, 1, 2, 4, 7, 13... The 7th number in this sequence is 13."
             },
             {
                 topic: "Automorphic Number",
@@ -333,12 +332,12 @@ Step 1: Calculate the square: 76 * 76 = 5776
 Step 2: Check if the square ('5776') ends with the original number ('76').
 Result: It does, so 76 is an Automorphic Number.
 
-Number = 25
-Step 1: Calculate the square: 25 * 25 = 625
-Result: '625' ends with '25', so it's also Automorphic.`,
+Number = 6
+Step 1: Calculate the square: 6 * 6 = 36
+Result: '36' ends with '6', so it's also Automorphic.`,
                 question: "Which of the following is an Automorphic Number?",
-                options: [75, 76, 77, 78],
-                answerExplanation: "The square of 76 is 5776. Since 5776 ends with the digits '76', it is an automorphic number."
+                options: [23, 24, 25, 26],
+                answerExplanation: "The square of 25 is 625. Since 625 ends with the digits '25', it is an automorphic number."
             }
         ];
 
