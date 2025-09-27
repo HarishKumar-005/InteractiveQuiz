@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Logic Interactive Learning</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a clean look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the application */
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+
+        /* Styling for the animated reveal of content */
+        .content-panel {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: max-height 0.7s ease-in-out, opacity 0.5s ease-in-out;
+        }
+
+        .content-panel.visible {
+            max-height: 1500px; /* A large enough value to accommodate content */
+            opacity: 1;
+        }
+        
+        /* Selected option style */
+        .option-btn.selected {
+            background-color: #3b82f6; /* Blue-500 */
+            color: white;
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        /* Style for the code/pseudocode blocks */
+        pre {
+            background-color: #1e293b; /* Slate-800 */
+            color: #e2e8f0; /* Slate-200 */
+            padding: 1rem;
+            border-radius: 0.5rem;
+            white-space: pre-wrap; /* Ensures long lines wrap */
+            word-wrap: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.875rem;
+        }
+        
+        /* Fade-in animation for the main card */
+        .card-enter {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Progress Bar Styling */
+        #progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0; /* Slate-200 */
+            z-index: 50;
+        }
+        #progress-bar {
+            height: 100%;
+            background-color: #3b82f6; /* Blue-500 */
+            width: 0%;
+            transition: width 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 pt-10 pb-10">
+
+    <!-- Progress Bar -->
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div class="w-full max-w-3xl mx-auto px-4">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800">Number Logic Interactive Learning</h1>
+            <p class="text-slate-500 mt-2">Learn and test your knowledge of common number-based algorithms.</p>
+        </header>
+
+        <!-- Main container for the "slide" -->
+        <main id="learning-container" class="bg-white p-6 md:p-8 rounded-2xl shadow-lg">
+            
+            <!-- Combined Lesson and Quiz View -->
+            <div id="slide-content">
+                <h2 id="lesson-topic" class="text-3xl font-bold text-blue-600 mb-4 border-b-2 border-blue-200 pb-2"></h2>
+                
+                <h3 class="text-xl font-semibold text-slate-700 mt-6 mb-2">Explanation</h3>
+                <p id="lesson-explanation" class="text-slate-600 leading-relaxed"></p>
+                
+                <h3 class="text-xl font-semibold text-slate-700 mt-6 mb-2">Algorithm</h3>
+                <pre id="lesson-algorithm"></pre>
+                
+                <h3 class="text-xl font-semibold text-slate-700 mt-6 mb-2">Example Calculation</h3>
+                <pre id="lesson-example"></pre>
+
+                <!-- Separator and Quiz Section -->
+                <div class="mt-10 pt-6 border-t-2 border-dashed">
+                    <div id="quiz-section">
+                        <h3 class="text-2xl font-bold text-indigo-600 text-center mb-2">Test Your Knowledge</h3>
+                        <p id="question-text" class="text-lg font-semibold text-slate-700 mb-6 text-center"></p>
+                        <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Options will be dynamically inserted here -->
+                        </div>
+                         <!-- Answer reveal section -->
+                        <div id="answer-panel" class="content-panel mt-6 border-t pt-6 border-slate-200">
+                            <h3 class="text-xl font-semibold text-slate-800 mb-2">Answer Explanation</h3>
+                            <pre id="answer-explanation" class="!bg-green-100 !text-green-900 border border-green-300"></pre>
+                        </div>
+                         <div class="mt-8 flex justify-end">
+                            <button id="reveal-btn" class="bg-blue-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+                                Reveal Answer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation buttons for topics -->
+            <div id="nav-buttons" class="mt-8 pt-6 border-t flex justify-between items-center">
+                <button id="back-btn" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-75 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
+                    Back
+                </button>
+                <button id="next-btn" class="bg-green-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-600 transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-75 flex items-center gap-2">
+                    Next Topic
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
+                </button>
+            </div>
+        </main>
+
+        <!-- Completion message card -->
+        <div id="completion-card" class="hidden text-center bg-white p-8 rounded-2xl shadow-lg">
+             <h2 class="text-2xl font-bold text-slate-800">Congratulations!</h2>
+             <p class="mt-2 text-slate-600">You have completed all the topics.</p>
+             <button id="restart-btn" class="mt-6 bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-indigo-600 transition-all duration-300">
+                 Restart
+             </button>
+        </div>
+    </div>
+
+    <script>
+        const learningData = [
+             {
+                topic: "Fibonacci Series",
+                explanation: "A series where each number is the sum of the two preceding ones. The series typically starts with 0 and 1.",
+                algorithm: `1. Start with two initial numbers, usually 0 and 1.
+2. To get the next number in the series, add the two previous numbers together.
+3. Replace the older of the two previous numbers with the newer one, and the newer one with the new sum.
+4. Repeat the process to generate the series term by term.`,
+                example: `To find the 10th term in the series starting 0, 1:
+The terms are: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...
+The 10th number in that list is 34.`,
+                question: "What is the 10th term of the Fibonacci series starting with 0, 1?",
+                options: [34, 55, 44, 89],
+                answerExplanation: `The series is: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34...
+Counting the terms from the beginning, the 10th number in this sequence is 34.`
+            },
+            {
+                topic: "Perfect Square",
+                explanation: "A perfect square is an integer that is the square of another integer. In other words, its square root is a whole number.",
+                algorithm: `1. Calculate the square root of the given number.
+2. Check if the result is a whole number (i.e., it has no decimal or fractional part).
+3. If the square root is a whole number, the original number is a perfect square. Otherwise, it is not.`,
+                example: `Number = 49
+Step 1: Calculate the square root: √49 = 7
+Step 2: Check if the result is a whole number. 7 is a whole number.
+Result: 49 is a Perfect Square.
+
+Number = 50
+Step 1: Calculate the square root: √50 ≈ 7.071
+Step 2: The result is not a whole number.
+Result: 50 is not a Perfect Square.`,
+                question: "Which of the following is a Perfect Square?",
+                options: [48, 49, 50, 51],
+                answerExplanation: `The square root of 49 is 7, which is a whole number.
+The other options (√48 ≈ 6.92, √50 ≈ 7.07, √51 ≈ 7.14) do not have whole number square roots.`
+            },
+            {
+                topic: "Perfect Number",
+                explanation: "A perfect number is a positive integer that is equal to the sum of its positive divisors, excluding the number itself (also known as its proper divisors).",
+                algorithm: `1. Find all the positive numbers that divide the given number evenly (its divisors), but do not include the number itself.
+2. Add all of these 'proper divisors' together.
+3. If this sum is exactly equal to the original number, then it is a perfect number.`,
+                example: `Number = 6
+Step 1: Find all proper divisors (divisors excluding 6).
+  The divisors are 1, 2, 3.
+Step 2: Sum the proper divisors.
+  Sum = 1 + 2 + 3 = 6
+Step 3: Compare the sum with the original number.
+  6 (sum) == 6 (original number)
+Result: 6 is a Perfect Number.`,
+                question: "Which of the following is a Perfect Number?",
+                options: [5, 6, 7, 8],
+                answerExplanation: "The proper divisors of 6 are 1, 2, and 3. The sum (1 + 2 + 3) is 6. Therefore, 6 is a perfect number."
+            },
+            {
+                topic: "Magic Number",
+                explanation: "A number is a Magic Number if the eventual sum of its digits is 1. You keep summing the digits of the result until you get a single-digit number.",
+                algorithm: `1. Calculate the sum of all digits of the number.
+2. If the sum is a single digit, the process is complete.
+3. If the sum has more than one digit, repeat Step 1 using the sum as the new number.
+4. Once a single-digit sum is found, check if it is 1. If it is, the original number is a Magic Number.`,
+                example: `Number = 19
+Step 1: Sum of digits = 1 + 9 = 10
+The result (10) is not a single digit, so repeat.
+
+Step 2: Sum of digits of 10 = 1 + 0 = 1
+The result is a single digit.
+
+Final Check: The final single digit is 1.
+Therefore, 19 is a Magic Number.`,
+                question: "Which of the following is a Magic Number?",
+                options: [18, 19, 20, 21],
+                answerExplanation: "For 19: 1 + 9 = 10, then 1 + 0 = 1. The final sum is 1, so it's a Magic Number."
+            },
+             {
+                topic: "Neon Number",
+                explanation: "A number is called a Neon Number if the sum of the digits of its square is equal to the number itself.",
+                algorithm: `1. Calculate the square of the given number.
+2. Calculate the sum of all the digits of the resulting square.
+3. Compare this sum with the original number.
+4. If they are equal, the original number is a Neon Number.`,
+                example: `Number = 9
+Step 1: Calculate the square: 9 * 9 = 81
+Step 2: Sum the digits of the square: 8 + 1 = 9
+Step 3: Compare the sum with the original number.
+
+Result: 9 (sum) == 9 (original number)
+Therefore, 9 is a Neon Number.`,
+                question: "Which of the following is a Neon Number?",
+                options: [4, 9, 10, 12],
+                answerExplanation: "For 9: The square is 81. The sum of the digits of the square is 8 + 1 = 9. This matches the original number."
+            },
+            {
+                topic: "Strong Number",
+                explanation: "A Strong Number is a number where the sum of the factorial of its individual digits is equal to the number itself.",
+                algorithm: `1. Separate the digits of the number.
+2. For each individual digit, calculate its factorial (e.g., 4! = 1×2×3×4 = 24).
+3. Sum the factorials of all the digits.
+4. If this sum is equal to the original number, it is a Strong Number.`,
+                example: `Number = 145
+Step 1: Get factorial of each digit.
+  1! = 1
+  4! = 24
+  5! = 120
+Step 2: Sum these factorials.
+  Sum = 1 + 24 + 120 = 145
+Step 3: Compare sum with the original number.
+
+Result: 145 (sum) == 145 (original number)
+Therefore, 145 is a Strong Number.`,
+                question: "Which of the following is a Strong Number?",
+                options: [123, 145, 150, 135],
+                answerExplanation: "For 145: 1! + 4! + 5! = 1 + 24 + 120 = 145. The sum of factorials equals the number itself."
+            },
+            {
+                topic: "Spy Number",
+                explanation: "A Spy Number is a number where the sum of its digits is equal to the product of its digits.",
+                algorithm: `1. Separate the digits of the number.
+2. Calculate the sum of all the digits.
+3. Calculate the product of all the digits.
+4. If the sum from Step 2 is equal to the product from Step 3, the number is a Spy Number.`,
+                example: `Number = 1124
+Step 1: Calculate sum of digits: 1 + 1 + 2 + 4 = 8
+Step 2: Calculate product of digits: 1 * 1 * 2 * 4 = 8
+Step 3: Compare sum and product.
+
+Result: 8 (sum) == 8 (product)
+Therefore, 1124 is a Spy Number.`,
+                question: "Which of the following is a Spy Number?",
+                options: [25, 123, 1124, 45],
+                answerExplanation: "For 1124: The sum of digits is 1+1+2+4=8. The product of digits is 1*1*2*4=8. They are equal."
+            },
+            {
+                topic: "Harshad / Niven Number",
+                explanation: "A Harshad (or Niven) Number is an integer that is divisible by the sum of its own digits.",
+                algorithm: `1. Calculate the sum of all the digits of the number.
+2. Check if the original number can be divided evenly by this sum (i.e., the remainder is 0).
+3. If it is divisible, the number is a Harshad Number.`,
+                example: `Number = 18
+Step 1: Calculate sum of digits: 1 + 8 = 9
+Step 2: Check if the number is divisible by the sum.
+  18 is divisible by 9 (18 % 9 == 0)
+  
+Result: 18 is a Harshad Number.`,
+                question: "Which of the following is a Harshad (or Niven) Number?",
+                options: [17, 18, 19, 20],
+                answerExplanation: "For 18: The sum of digits is 1+8=9. 18 is divisible by 9, so it is a Harshad number."
+            },
+            {
+                topic: "Tribonacci Series",
+                explanation: "Similar to Fibonacci, but each number is the sum of the three preceding ones. The series usually starts with 0, 1, 1.",
+                algorithm: `1. Start with three initial numbers, usually 0, 1, and 1.
+2. To get the next number in the series, add the three previous numbers together.
+3. Update the set of 'previous three numbers' to include the new sum.
+4. Repeat the process to generate the series.`,
+                example: `To find the 8th term (at index 7):
+Series: 0, 1, 1
+4th term (index 3): 0 + 1 + 1 = 2
+5th term (index 4): 1 + 1 + 2 = 4
+6th term (index 5): 1 + 2 + 4 = 7
+7th term (index 6): 2 + 4 + 7 = 13
+8th term (index 7): 4 + 7 + 13 = 24`,
+                question: "What is the 8th term of the Tribonacci series starting 0, 1, 1?",
+                options: [4, 7, 13, 24],
+                answerExplanation: "The series goes 0, 1, 1, 2, 4, 7, 13, 24... The 8th number in this sequence is 24."
+            },
+            {
+                topic: "Automorphic Number",
+                explanation: "An automorphic number is a number whose square ends in the same digits as the number itself.",
+                algorithm: `1. Calculate the square of the given number.
+2. Compare the last digit(s) of the square with the original number.
+3. If the ending digits of the square are identical to the original number, it is an Automorphic Number.`,
+                example: `Number = 76
+Step 1: Calculate the square: 76 * 76 = 5776
+Step 2: Check if the square ('5776') ends with the original number ('76').
+Result: It does, so 76 is an Automorphic Number.
+
+Number = 25
+Step 1: Calculate the square: 25 * 25 = 625
+Result: '625' ends with '25', so it's also Automorphic.`,
+                question: "Which of the following is an Automorphic Number?",
+                options: [75, 76, 77, 78],
+                answerExplanation: "The square of 76 is 5776. Since 5776 ends with the digits '76', it is an automorphic number."
+            }
+        ];
+
+        // DOM Elements
+        const learningContainer = document.getElementById('learning-container');
+        const completionCard = document.getElementById('completion-card');
+        const progressBar = document.getElementById('progress-bar');
+        
+        // Content elements
+        const lessonTopic = document.getElementById('lesson-topic');
+        const lessonExplanation = document.getElementById('lesson-explanation');
+        const lessonAlgorithm = document.getElementById('lesson-algorithm');
+        const lessonExample = document.getElementById('lesson-example');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const revealBtn = document.getElementById('reveal-btn');
+        const answerPanel = document.getElementById('answer-panel');
+        const answerExplanation = document.getElementById('answer-explanation');
+
+        // Navigation elements
+        const navButtons = document.getElementById('nav-buttons');
+        const backBtn = document.getElementById('back-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        let currentTopicIndex = 0;
+        let selectedOption = null;
+
+        function updateProgressBar() {
+            const percentage = ((currentTopicIndex + 1) / learningData.length) * 100;
+            progressBar.style.width = `${percentage}%`;
+        }
+
+        function loadTopic() {
+            // Add animation class
+            learningContainer.classList.remove('card-enter');
+            void learningContainer.offsetWidth; // Trigger reflow to restart animation
+            learningContainer.classList.add('card-enter');
+
+            // Reset quiz state
+            selectedOption = null;
+            answerPanel.classList.remove('visible');
+            revealBtn.classList.remove('hidden');
+            
+            // Hide or show nav buttons
+            backBtn.classList.toggle('hidden', currentTopicIndex === 0);
+            const nextBtnText = nextBtn.querySelector('span');
+            nextBtn.innerHTML = (currentTopicIndex === learningData.length - 1) ? 'Finish <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>' : 'Next Topic <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>';
+
+
+            // Populate all content
+            const currentTopic = learningData[currentTopicIndex];
+            lessonTopic.textContent = currentTopic.topic;
+            lessonExplanation.textContent = currentTopic.explanation;
+            lessonAlgorithm.textContent = currentTopic.algorithm;
+            lessonExample.textContent = currentTopic.example;
+            questionText.textContent = currentTopic.question;
+
+            optionsContainer.innerHTML = ''; // Clear previous options
+            currentTopic.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-btn', 'p-4', 'border-2', 'border-slate-300', 'rounded-lg', 'text-left', 'transition-all', 'duration-200', 'hover:bg-slate-100', 'hover:border-blue-400', 'focus:outline-none', 'focus:ring-2', 'focus:ring-blue-400');
+                button.onclick = () => handleOptionClick(button, option);
+                optionsContainer.appendChild(button);
+            });
+
+            updateProgressBar();
+            window.scrollTo(0, 0);
+        }
+        
+        function handleOptionClick(button, option) {
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            selectedOption = option;
+        }
+
+        function handleReveal() {
+            if (selectedOption === null) {
+                alert("Please select an option first!");
+                return;
+            }
+            const currentTopic = learningData[currentTopicIndex];
+            answerExplanation.textContent = currentTopic.answerExplanation;
+            answerPanel.classList.add('visible');
+            revealBtn.classList.add('hidden');
+        }
+
+        function handleNext() {
+            if (currentTopicIndex < learningData.length - 1) {
+                currentTopicIndex++;
+                loadTopic();
+            } else {
+                // Show completion screen
+                learningContainer.classList.add('hidden');
+                navButtons.classList.add('hidden');
+                completionCard.classList.remove('hidden');
+            }
+        }
+
+        function handleBack() {
+            if (currentTopicIndex > 0) {
+                currentTopicIndex--;
+                loadTopic();
+            }
+        }
+
+        function handleRestart() {
+            currentTopicIndex = 0;
+            completionCard.classList.add('hidden');
+            learningContainer.classList.remove('hidden');
+            navButtons.classList.remove('hidden');
+            loadTopic();
+        }
+
+        // Event Listeners
+        revealBtn.addEventListener('click', handleReveal);
+        nextBtn.addEventListener('click', handleNext);
+        backBtn.addEventListener('click', handleBack);
+        restartBtn.addEventListener('click', handleRestart);
+
+        // Initial load
+        loadTopic();
+    </script>
+</body>
+</html>
+
